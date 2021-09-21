@@ -1,0 +1,31 @@
+{
+  "name": "tuck-shop",
+  "version": "1.0.0",
+  "description": "Inventory app to manage puchases for seconday school students",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "author": "Adelugba Bringforthjoy Emmanuel",
+  "license": "ISC",
+  "dependencies": {
+    "@mailchimp/mailchimp_marketing": "^3.0.58",
+    "aws-sdk": "^2.991.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-validator": "^6.12.1",
+    "fast-csv": "^4.3.6",
+    "jsonwebtoken": "^8.5.1",
+    "md5": "^2.3.0",
+    "moment": "^2.29.1",
+    "multer": "^1.4.3",
+    "multer-s3": "^2.9.0",
+    "mysql2": "^2.3.0",
+    "nodemailer": "^6.6.3",
+    "sequelize": "^6.6.5"
+  }
+}
