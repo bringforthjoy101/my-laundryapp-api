@@ -93,81 +93,6 @@ const login = async (req, res, next) => {
     }
 };
 
-const adminRegister = async (req, res, next) => {
-    
-    const {firstName, lastName, phone, address, email, password} = req.body
-    console.log(password)
-    let insertData = { firstName, lastName, phone, address, email };
-    //Hash password
-    const salt = await bcrypt.genSalt(15);
-    const hashPassword = await bcrypt.hash(password, salt);
-    insertData = {...insertData, password:hashPassword}
-    // insertData.Password = hashPassword;
-    
-    try {
-        const adminExists = await DB.admins.findOne({where:{email}});
-        
-        // if user exists stop the process and return a message
-        if (adminExists) {
-            return handleResponse(res, 400, false, `User with email ${email} already exists`);
-        }
-        const admin = await DB.admins.create(insertData)
-        
-        if (admin) {  
-            let payload = { 
-                id: admin.id, 
-                type: 'admin',
-                firstName, lastName, phone, email
-            };
-            const token = jwt.sign(payload, config.JWTSECRET);
-            const data ={ token, admin:payload }
-            return handleResponse(res, 200, true, `Registration successfull`, data );
-        }
-        else {
-            return handleResponse(res, 401, false, `An error occured`);
-        }
-    } catch (error) {
-        console.log(error);
-        return handleResponse(res, 401, false, `An error occured - ${error}`);
-    }
-};
-
-const adminLogin = async (req, res, next) => {
-    const {email, password} = req.body;
-    try {
-        const admin = await DB.admins.findOne({ where:{email} });
-        
-        if (admin) {
-            const validPass = await bcrypt.compareSync(password, admin.password);
-            if (!validPass) return handleResponse(res, 401, false, `Email or Password is incorrect!`);
-
-            if (admin.status === 'inactive') return handleResponse(res, 401, false, `Account Suspended!, Please contact Administrator`);
-    
-            // Create and assign token
-            const payload = { 
-                id: admin.id, 
-                type: 'admin',
-                email, 
-                firstName: admin.firstName, lastName: admin.lastName, phone: admin.phone
-            };
-            const token = jwt.sign(payload, config.JWTSECRET);
-    
-            return res.status(200).header("auth-token", token).send({ 
-                success: true, 
-                message: 'Operation Successfull',
-                token, 
-                admin: payload 
-            });
-        }
-        else {
-            return handleResponse(res, 401, false, `Incorrect Email`);
-        }
-    } catch (error) {
-        console.log(error);
-        return handleResponse(res, 401, false, `An error occured - ${error}`);
-    }
-};
-
 const isAuthorized = async (req, res, next) => {
     
     //this is the url without query params
@@ -204,7 +129,24 @@ const isAdmin = async (req, res, next) => {
     next();
 };
 
+const getAdmins = async (req, res, next) => {
+    try{
+        const errors = validationResult(req);
+        if (!errors.isEmpty())
+            return res.status(400).json({ errors: errors.array() });
+        const admins = await DB.admins.findAll();
+
+        if(!admins.length)
+            return successResponse(res, `No admin available!`, []);
+        return successResponse(res, `${admins.length} admin${admins.length>1 ? 's' : ''} retrived!`, admins);
+    }
+    catch(error){
+        console.log(error.message);
+        return errorResponse(res, `An error occured:- ${error.message}`);
+    }
+}
+
     
 module.exports = {
-    isAuthorized, isAdmin, login, register, adminLogin, adminRegister
+    isAuthorized, isAdmin, login, register, getAdmins
 }
