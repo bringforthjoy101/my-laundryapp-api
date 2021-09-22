@@ -2,7 +2,6 @@
 const DB = require('./db');
 const { validationResult } = require('express-validator');
 const {successResponse, errorResponse} = require('../helpers/utility');
-const { updateWallet } = require('../helpers/wallet');
 
 /**
  * GET TRANSACTIONS FROM DATABASE, CALLED FROM TRANSACTIONS LISTING PAGE
@@ -18,7 +17,7 @@ const getTransactions = async (req, res, next) => {
             return res.status(400).json({ errors: errors.array() });
         const transactions = await DB.transactions.findAll({
             include: [
-                { model: DB.students, attributes: ['firstName', 'lastName', 'avatar'] }
+                { model: DB.students, attributes: ['id', 'firstName', 'lastName', 'avatar'] }
             ]
         });
 
@@ -48,7 +47,7 @@ const getTransactionDetail = async(req,res) => {
         const transaction = await DB.transactions.findOne({ 
             where: { id: transactionId }, 
             include: [
-                { model: DB.students, attributes: ['fisrtName', 'lastName', 'avatar'] }
+                { model: DB.students, attributes: ['id', 'fisrtName', 'lastName', 'avatar'] }
             ] 
         });
         
