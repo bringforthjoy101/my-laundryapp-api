@@ -103,7 +103,12 @@ const getOrders = async (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty())
             return res.status(400).json({ errors: errors.array() });
-        const orders = await DB.orders.findAll();
+        const orders = await DB.orders.findAll({
+            include: [
+                { model: DB.students, attributes: ['fistName', 'lastName'] },
+                { model: DB.admins, attributes: ['fistName', 'lastName'] }
+            ]
+        });
 
         if(!orders.length)
             return successResponse(res, `No order available!`, []);
@@ -131,7 +136,7 @@ const getOrderDetail = async(req,res) => {
         const order = await DB.orders.findOne({ 
             where: { id: orderId }, 
             include: [
-                { model: DB.students, attributes: ['fistName', 'lastName'] },
+                { model: DB.students, attributes: ['fistName', 'lastName', 'avatar'] },
                 { model: DB.admins, attributes: ['fistName', 'lastName'] }
             ] 
         });

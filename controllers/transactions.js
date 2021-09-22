@@ -16,7 +16,11 @@ const getTransactions = async (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty())
             return res.status(400).json({ errors: errors.array() });
-        const transactions = await DB.transactions.findAll();
+        const transactions = await DB.transactions.findAll({
+            include: [
+                { model: DB.students, attributes: ['fistName', 'lastName', 'avatar'] }
+            ]
+        });
 
         if(!transactions.length)
             return successResponse(res, `No transaction available!`, []);
@@ -44,7 +48,7 @@ const getTransactionDetail = async(req,res) => {
         const transaction = await DB.transactions.findOne({ 
             where: { id: transactionId }, 
             include: [
-                { model: DB.students, attributes: ['fistName', 'lastName'] }
+                { model: DB.students, attributes: ['fistName', 'lastName', 'avatar'] }
             ] 
         });
         
