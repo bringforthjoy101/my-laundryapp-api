@@ -40,9 +40,9 @@ router.get('/students/get-detail/:id', validate('id'), students.getStudentDetail
 router.get('/students/delete/:id', validate('id'), students.deleteStudent);
 
 router.post('/orders/create', validate('/orders/create'), orders.createOrder);
-router.post('/orders', orders.getOrders);
-router.post('/transactions', transactions.getTransactions);
-router.post('/orders/get-detail/:id', validate('id'), orders.getOrderDetail);
-router.post('/transactions/get-detail/:id', validate('id'), transactions.getTransactionDetail);
+router.get('/orders', orders.getOrders);
+router.get('/transactions', transactions.getTransactions);
+router.get('/orders/get-detail/:id', validate('id'), orders.getOrderDetail);
+router.get('/transactions/get-detail/:id', validate('id'), transactions.getTransactionDetail);
 
 module.exports = router;
