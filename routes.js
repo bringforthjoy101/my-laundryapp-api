@@ -6,6 +6,7 @@ const mail = require('./controllers/mail')
 const subscription = require('./controllers/subscription');
 const products = require('./controllers/products');
 const orders = require('./controllers/orders');
+const transactions = require('./controllers/transactions');
 const students = require('./controllers/students');
 const {validate} = require('./validate')
 
@@ -39,5 +40,9 @@ router.get('/students/get-detail/:id', validate('id'), students.getStudentDetail
 router.get('/students/delete/:id', validate('id'), students.deleteStudent);
 
 router.post('/orders/create', validate('/orders/create'), orders.createOrder);
+router.post('/orders', orders.getOrders);
+router.post('/transactions', transactions.getTransactions);
+router.post('/orders/get-detail/:id', validate('id'), orders.getOrderDetail);
+router.post('/transactions/get-detail/:id', validate('id'), transactions.getTransactionDetail);
 
 module.exports = router;
