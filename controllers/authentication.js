@@ -2,7 +2,7 @@ const config = require('../config/config')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs');
 const DB = require('./db');
-const { handleResponse } = require('../helpers/utility');
+const { handleResponse, successResponse, errorResponse } = require('../helpers/utility');
 const { validationResult } = require('express-validator');
 
 
