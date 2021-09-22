@@ -105,8 +105,8 @@ const getOrders = async (req, res, next) => {
             return res.status(400).json({ errors: errors.array() });
         const orders = await DB.orders.findAll({
             include: [
-                { model: DB.students, attributes: ['fistName', 'lastName'] },
-                { model: DB.admins, attributes: ['fistName', 'lastName'] }
+                { model: DB.students, attributes: ['firstName', 'lastName'] },
+                { model: DB.admins, attributes: ['firstName', 'lastName'] }
             ]
         });
 
@@ -136,8 +136,8 @@ const getOrderDetail = async(req,res) => {
         const order = await DB.orders.findOne({ 
             where: { id: orderId }, 
             include: [
-                { model: DB.students, attributes: ['fistName', 'lastName', 'avatar'] },
-                { model: DB.admins, attributes: ['fistName', 'lastName'] }
+                { model: DB.students, attributes: ['firstName', 'lastName', 'avatar'] },
+                { model: DB.admins, attributes: ['firstName', 'lastName'] }
             ] 
         });
         
