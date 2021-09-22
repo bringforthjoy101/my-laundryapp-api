@@ -105,7 +105,7 @@ const getOrders = async (req, res, next) => {
             return res.status(400).json({ errors: errors.array() });
         const orders = await DB.orders.findAll({
             include: [
-                { model: DB.students, attributes: ['firstName', 'lastName'] },
+                { model: DB.students, attributes: ['firstName', 'lastName', 'avatar'] },
                 { model: DB.admins, attributes: ['firstName', 'lastName'] }
             ]
         });
