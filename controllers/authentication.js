@@ -2,6 +2,8 @@ const config = require('../config/config')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs');
 const DB = require('./db');
+const { Op, Sequelize } = require('sequelize');
+const moment = require('moment');
 const { handleResponse, successResponse, errorResponse } = require('../helpers/utility');
 const { validationResult } = require('express-validator');
 
@@ -146,7 +148,86 @@ const getAdmins = async (req, res, next) => {
     }
 }
 
+const dashboardData = async (req, res, next) => {
+    try {
+        const students = await DB.students.findAll();
+        const admins = await DB.admins.findAll();
+        const products = await DB.products.findAll();
+        const orders = await DB.orders.findAll();
+        const transactions = await DB.transactions.findAll();
+
+        const totalSales = await DB.orders.sum('amount');
+        const maxSales = await DB.orders.max('amount');
+        const avgSales = totalSales / orders.length;
+
+        // const salesToday = await DB.orders.findAll({
+        //     where: {
+        //         createdAt: {
+        //             [Op.gte]: moment().startOf('date')
+        //         },
+        //     }
+        // });
+        const salesToday = await DB.orders.sum('amount', {
+            where: {
+                createdAt: {
+                    [Op.gte]: moment().startOf('date')
+                }
+            }
+        });
+        const salesYesterday = await DB.orders.sum('amount', {
+            where: {
+                createdAt: {
+                    [Op.gte]: moment().startOf('day').add(-1, 'day'),
+                    [Op.lte]: moment().startOf('day')
+                }
+            }
+        });
+        const salesThisWeek = await DB.orders.sum('amount', {
+            where: {
+                createdAt: {
+                    [Op.gte]: moment().startOf('week'),
+                    [Op.lte]: moment().endOf('day')
+                }
+            }
+        });
+        const salesThisMonth = await DB.orders.sum('amount', {
+            where: {
+                createdAt: {
+                    [Op.gte]: moment().startOf('month'),
+                    [Op.lte]: moment().endOf('day')
+                }
+            }
+        });
+        const salesThisYear = await DB.orders.sum('amount', {
+            where: {
+                createdAt: {
+                    [Op.gte]: moment().startOf('year'),
+                    [Op.lte]: moment().endOf('day')
+                }
+            }
+        });
+        const salesSoFar = await DB.orders.sum('amount');
+
+        const data = {
+            totalStudents: students.length,
+            totalAdmins: admins.length,
+            totalProduct: products.length,
+            totalOrders: orders.length,
+            totalTransactions: transactions.length,
+            sales: {
+                totalSales, maxSales, avgSales, salesToday, salesYesterday, salesThisWeek, salesThisMonth, salesThisYear, salesSoFar
+            }
+        }
+        
+        return successResponse(res, `Dashboard data retrived!`, data);
+    } catch (error) {
+        console.log(error.message);
+        return errorResponse(res, `An error occured:- ${error.message}`);
+    }
+
+}
+
     
 module.exports = {
-    isAuthorized, isAdmin, login, register, getAdmins
+    isAuthorized, isAdmin, login, register, getAdmins, dashboardData
 }

@@ -1,5 +1,5 @@
 const express = require('express');
-const {login, register, isAdmin, getAdmins} = require('./controllers/authentication');
+const {login, register, isAdmin, getAdmins, dashboardData} = require('./controllers/authentication');
 const {upload} = require('./helpers/upload');
 
 const mail = require('./controllers/mail')
@@ -27,6 +27,7 @@ router.get('/subscribers', subscription.getSubscribers);
 router.post('/login', validate('/login'), login);
 router.post('/register', validate('/register'), register);
 router.get('/admins', getAdmins);
+router.get('/dashboard', dashboardData);
 
 router.post('/products/create', validate('/products/create'), products.createProduct);
 router.post('/products/update/:id', validate('/products/update'), products.updateProduct);
