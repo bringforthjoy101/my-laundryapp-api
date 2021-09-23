@@ -154,7 +154,7 @@ const getStudents = async (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty())
             return res.status(400).json({ errors: errors.array() });
-        const students = await DB.students.findAll();
+        const students = await DB.students.findAll({ order: [ ['id', 'DESC'] ] });
 
         if(!students.length)
             return successResponse(res, `No student available!`, []);
@@ -178,7 +178,7 @@ const getStudentDetail = async(req,res) => {
         if (!errors.isEmpty())
             return res.status(400).json({ errors: errors.array() });
         const {id} = req.params;
-        const student = await DB.students.findOne({ where: { id }, include: [{ model: DB.orders }, { model: DB.transactions }] });
+        const student = await DB.students.findOne({ where: { id }, include: [{ model: DB.orders, order: [ ['id', 'DESC'] ] }, { model: DB.transactions, order: [ ['id', 'DESC'] ] }], order: [ ['id', 'DESC'] ] });
         
         if(!student)
             return errorResponse(res, `Student with ID ${id} not found!`);

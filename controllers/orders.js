@@ -108,7 +108,7 @@ const getOrders = async (req, res, next) => {
             include: [
                 { model: DB.students, attributes: ['id', 'firstName', 'lastName', 'avatar'] },
                 { model: DB.admins, attributes: ['id', 'firstName', 'lastName'] }
-            ]
+            ], order: [ ['id', 'DESC'] ]
         });
 
         if(!orders.length)

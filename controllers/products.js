@@ -122,7 +122,7 @@ const getProducts = async (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty())
             return res.status(400).json({ errors: errors.array() });
-        const products = await DB.products.findAll();
+        const products = await DB.products.findAll({order: [ ['id', 'DESC'] ]});
 
         if(!products.length)
             return successResponse(res, `No product available!`, []);

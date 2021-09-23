@@ -18,7 +18,7 @@ const getTransactions = async (req, res, next) => {
         const transactions = await DB.transactions.findAll({
             include: [
                 { model: DB.students, attributes: ['id', 'firstName', 'lastName', 'avatar'] }
-            ]
+            ], order: [ ['id', 'DESC'] ]
         });
 
         if(!transactions.length)
