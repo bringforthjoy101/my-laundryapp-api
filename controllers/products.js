@@ -89,7 +89,7 @@ const updateProduct = async (req, res, next) => {
             return res.status(400).json({ errors: errors.array() });
 
         const {name, description, image, qty, price, status} = req.body;
-        const {id} = req.body;
+        const {id} = req.params;
         const product = await DB.products.findOne({ where: {id} });
         if (!product)
                 return errorResponse(res, `Product with ID ${id} not found!`);
