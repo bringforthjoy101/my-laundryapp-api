@@ -88,6 +88,14 @@ exports.validate = (method) => {
           body('avatar').isString().withMessage('avatar is required!')
       ]
     }
+    case '/students/wallet': {
+      return [
+          body('narration').not().isEmpty().isString().withMessage('narration is required!'),
+          body('amount').custom(value => { return Number(value) }).withMessage('amount is required!'),
+          body('studentId').custom(value => { return Number(value) }).withMessage('studentId is required!'),
+          body('type').custom(value => { return ['credit', 'debit'].includes(value.toLowerCase()) }).withMessage('type can only be credit or debit!')
+      ]
+    }
     case '/students/update': {
       return [
           param('id').isInt().withMessage('ID must be a number!'),

@@ -5,6 +5,7 @@ const {successResponse, errorResponse} = require('../helpers/utility');
 const aws = require('aws-sdk');
 const csv = require('fast-csv');
 const config = require('../config/config');
+const { updateWallet } = require('../helpers/wallet');
 
 
 /**
@@ -112,6 +113,31 @@ const updateStudent = async (req, res, next) => {
     }
     catch(error){
         console.log(error)
+        return errorResponse(res, `An error occured:- ${error.message}`);
+    }
+}
+
+const creditOrDebitStudentWallet = async (req, res, next) => {
+    try{
+        const errors = validationResult(req);
+        if (!errors.isEmpty())
+            return res.status(400).json({ errors: errors.array() });
+        const { amount, narration, studentId, type } = req.body;
+        const transactionId = new Date().getTime();
+        const walletData = {
+            studentId,
+            transactionId,
+            amount,
+            narration,
+            type
+        }
+        const logTransaction = await updateWallet(walletData);
+        if(!logTransaction.status)
+            return errorResponse(res, `An error occured:- ${logTransaction.message}`);
+        return successResponse(res, `Operation Successful!`);
+    }
+    catch(error){
+        console.log(error);
         return errorResponse(res, `An error occured:- ${error.message}`);
     }
 }
@@ -287,5 +313,5 @@ const uploadCSV = async (req,res) => {
 }
 
 module.exports = {uploadFile,deleteMultipleStudents,deleteAllStudents,deleteStudent,
-    getStudentDetail,createMultipleStudents,createStudent,updateStudent,getStudents,uploadCSV
+    getStudentDetail,createMultipleStudents,createStudent,updateStudent, creditOrDebitStudentWallet,getStudents,uploadCSV
 }

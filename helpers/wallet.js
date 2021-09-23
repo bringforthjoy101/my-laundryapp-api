@@ -6,11 +6,10 @@ const getStudentWalletBalance = async (studentId) => {
     return student.wallet;
 }
 
-const updateWallet = async ({transactionId, studentId, amount, type}) => {
+const updateWallet = async ({transactionId, studentId, amount, narration, type}) => {
     console.log(transactionId);
     let balance = await getStudentWalletBalance(studentId);
-    if (amount > balance)
-        return {status: false, message: 'Insuficient balance in student wallet'}
+    
     if (type == "credit") {
       const sql = `UPDATE students SET wallet = (students.wallet + ?) WHERE id = ?`;
       try {
@@ -21,6 +20,8 @@ const updateWallet = async ({transactionId, studentId, amount, type}) => {
         return {status: false, message: 'An error occured!'}
       }
     } else {
+      if (amount > balance)
+        return {status: false, message: 'Insuficient balance in student wallet'}
       const sql = `UPDATE students SET wallet = (students.wallet - ?) WHERE id = ?`;
       try {
         await DB.sequelize.query(sql,{ replacements: [Number(amount), studentId], type: DB.sequelize.QueryTypes.UPDATE })
@@ -35,6 +36,8 @@ const updateWallet = async ({transactionId, studentId, amount, type}) => {
       transactionId,
       amount,
       balance,
+      type,
+      narration,
       studentId
     };
     const transaction = await DB.transactions.create(users_transactions_data);

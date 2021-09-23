@@ -10,6 +10,14 @@ module.exports = function(sequelize, Sequelize) {
             type: Sequelize.STRING,
             allowNull: false
         },
+        type: {
+            type: Sequelize.ENUM('credit', 'debit'),
+            allowNull: false
+        },
+        narration: {
+            type: Sequelize.STRING,
+            allowNull: false
+        },
         amount: {
             type: Sequelize.DOUBLE.UNSIGNED,
             allowNull: false

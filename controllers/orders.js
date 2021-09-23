@@ -70,6 +70,7 @@ const createOrder= async (req, res, next) => {
                 studentId,
                 transactionId,
                 amount,
+                narration: 'Purchase from Tuck Shop',
                 type: 'debit'
             }
             const logTransaction = await updateWallet(walletData);
