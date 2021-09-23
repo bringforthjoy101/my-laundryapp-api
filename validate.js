@@ -56,7 +56,7 @@ exports.validate = (method) => {
     }
     case '/products/update': {
       return [
-          body('productId').custom(value => { return Number(value) }),
+          param('id').isInt().withMessage('ID must be a number!'),
           body('name').optional().isString().withMessage('name must be a string'),
           body('description').optional().isString().withMessage('description is required!'),
           body('qty').optional().custom(value => { return Number(value) }).withMessage('qty is required!'),
