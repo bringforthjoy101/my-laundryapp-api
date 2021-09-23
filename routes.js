@@ -29,7 +29,7 @@ router.post('/register', validate('/register'), register);
 router.get('/admins', getAdmins);
 
 router.post('/products/create', validate('/products/create'), products.createProduct);
-router.post('/products/update', validate('/products/update'), products.updateProduct);
+router.post('/products/update/:id', validate('/products/update'), products.updateProduct);
 router.get('/products', products.getProducts);
 router.get('/products/get-detail/:id', validate('id'), products.getProductDetail);
 router.get('/products/delete/:id', validate('id'), products.deleteProduct);
