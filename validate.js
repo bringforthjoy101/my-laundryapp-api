@@ -110,7 +110,7 @@ exports.validate = (method) => {
           body('group').optional().isString().withMessage('group is required!'),
           body('avatar').optional().isString().withMessage('avatay is required!'),
           body('wallet').optional().custom(value => { return Number(value) }).withMessage('wallet is required!'),
-          body('status').optional().custom(value => { return ['in stock', 'out of stock'].includes(value) }).withMessage('status can only be in stock or out of stock!')
+          body('status').optional().custom(value => { return ['active', 'suspended', 'expelled', 'graduated'].includes(value) }).withMessage('status can only be active, suspended, expelled, graduated!')
       ]
     }
 
