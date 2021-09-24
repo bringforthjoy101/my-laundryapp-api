@@ -91,7 +91,7 @@ const updateStudent = async (req, res, next) => {
             return res.status(400).json({ errors: errors.array() });
 
         const {id} = req.params;
-        const {firstName, lastName, otherName, email, studentId, type, className, level, group, wallet, status} = req.body;
+        const {firstName, lastName, otherName, email, studentId, type, className, level, group, wallet, status, avatar} = req.body;
         const student = await DB.students.findOne({ where: {id} });
         if (!student)
                 return errorResponse(res, `Student with ID ${id} not found!`);
@@ -107,6 +107,7 @@ const updateStudent = async (req, res, next) => {
             group: group ? group : student.group,
             wallet: wallet ? Number(student.wallet) + Number(wallet) : student.wallet,
             status: status ? status : student.status,
+            avatar: avatar ? avatar : student.avatar
         };
         await student.update(updateData);
         return successResponse(res, `Student updated successfully!`);
