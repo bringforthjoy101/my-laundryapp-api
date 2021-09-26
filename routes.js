@@ -8,7 +8,8 @@ const products = require('./controllers/products');
 const orders = require('./controllers/orders');
 const transactions = require('./controllers/transactions');
 const students = require('./controllers/students');
-const {validate} = require('./validate')
+const general = require('./controllers/general');
+const {validate} = require('./validate');
 
 const router = express.Router()
 
@@ -28,6 +29,7 @@ router.post('/login', validate('/login'), login);
 router.post('/register', validate('/register'), register);
 router.get('/admins', getAdmins);
 router.get('/dashboard', dashboardData);
+router.post('/upload-images', upload.array('image',1), general.uploadFile);
 
 router.post('/products/create', validate('/products/create'), products.createProduct);
 router.post('/products/update/:id', validate('/products/update'), products.updateProduct);

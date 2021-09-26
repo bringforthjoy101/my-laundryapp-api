@@ -224,7 +224,6 @@ const dashboardData = async (req, res, next) => {
         console.log(error.message);
         return errorResponse(res, `An error occured:- ${error.message}`);
     }
-
 }
 
     
