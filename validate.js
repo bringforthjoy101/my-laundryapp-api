@@ -51,10 +51,10 @@ exports.validate = (method) => {
       return [
           body('name').not().isEmpty().isString().withMessage('name is required!'),
           body('description').not().isEmpty().isString().withMessage('description is required!'),
-          body('qty').custom(value => { return Number(value) }).withMessage('qty is required!'),
+          body('qty').optional().custom(value => { return Number(value) }).withMessage('qty is required!'),
           body('unit').custom(value => { return validUnit.includes(value) }).withMessage(`unit can only be ${validUnit}!`),
           body('category').custom(value => { return validCategory.includes(value) }).withMessage(`category can only be ${validCategory}!`),
-          body('price').custom(value => { return Number(value) }).withMessage('price is required!'),
+          body('price').optional().custom(value => { return Number(value) }).withMessage('price is required!'),
           body('image').not().isEmpty().isString().withMessage('image is required!')
       ]
     }
