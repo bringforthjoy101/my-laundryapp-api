@@ -65,10 +65,10 @@ exports.validate = (method) => {
           param('id').isInt().withMessage('ID must be a number!'),
           body('name').optional().isString().withMessage('name must be a string'),
           body('description').optional().isString().withMessage('description is required!'),
-          body('qty').optional().custom(value => { return Number(value) }).withMessage('qty is required!'),
+          // body('qty').optional().custom(value => { return Number(value) }).withMessage('qty is required!'),
           body('unit').optional().custom(value => { return validUnit.includes(value) }).withMessage(`unit can only be ${validUnit}!`),
           body('category').optional().custom(value => { return validCategory.includes(value) }).withMessage(`category can only be ${validCategory}!`),
-          body('price').optional().custom(value => { return Number(value) }).withMessage('price is required!'),
+          // body('price').optional().custom(value => { return Number(value) }).withMessage('price is required!'),
           body('image').optional().not().isEmpty().isString().withMessage('image is required!'),
           body('status').optional().custom(value => { return ['in stock', 'out of stock'].includes(value) }).withMessage('status can only be in stock or out of stock!')
       ]
