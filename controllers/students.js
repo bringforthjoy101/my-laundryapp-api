@@ -60,7 +60,7 @@ const createStudent= async (req, res, next) => {
 
             const result = await DB.students.create(insert_data);
             if (result)
-                return successResponse(res, `Student ${studentId} created successfully!`);
+                return successResponse(res, `Student ${firstName} ${lastName} created successfully!`);
         }
         catch(error){
             console.log(error);
