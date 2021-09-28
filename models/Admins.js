@@ -25,7 +25,7 @@ module.exports = function(sequelize, Sequelize) {
             unique: true
         },
         role: {
-            type: Sequelize.ENUM('manager', 'busary', 'sales rep'),
+            type: Sequelize.ENUM('manager', 'busary', 'sales rep', 'store'),
             defaultValue: 'sales rep'
         },
         status: {

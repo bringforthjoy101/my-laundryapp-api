@@ -15,14 +15,6 @@ module.exports = function(sequelize, Sequelize) {
         otherName: {
             type: Sequelize.STRING
         },
-        email: {
-            type: Sequelize.STRING,
-            unique: true
-        },
-        studentId: {
-            type: Sequelize.STRING,
-            unique: true
-        },
         type: {
             type: Sequelize.ENUM('boarding', 'day'),
             defaultValue: 'boarding'

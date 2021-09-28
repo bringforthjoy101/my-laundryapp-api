@@ -25,6 +25,14 @@ module.exports = function(sequelize, Sequelize) {
             defaultValue: 0,
             allowNull: false
         },
+        unit: {
+            type: Sequelize.ENUM('kg', 'pck', 'pcs', 'l', 'tuber', 'g', 'rubber', 'bunch', 'crate', 'carton'),
+            defaultValue: 'pcs'
+        },
+        category: {
+            type: Sequelize.ENUM('shop', 'book', 'store'),
+            defaultValue: 'shop'
+        },
         status: {
             type: Sequelize.ENUM('in stock', 'out of stock'),
             defaultValue: 'out of stock'

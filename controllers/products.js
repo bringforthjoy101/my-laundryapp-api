@@ -59,13 +59,13 @@ const createProduct= async (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty())
                 return res.status(400).json({ errors: errors.array() });
-            const { name, description, image, qty, price } = req.body;
-            const insert_data = { name, description, image, qty, price, adminId: req.admin.id }
+            const { name, description, image, qty, unit, category, price } = req.body;
+            const insertData = { name, description, image, qty, price, unit, category, adminId: req.admin.id }
 
             const product = await DB.products.findOne({ where: { name } });
             if (product)
                 return errorResponse(res, `Product ${name} already exists!`);
-            const result = await DB.products.create(insert_data);
+            const result = await DB.products.create(insertData);
             if (result)
                 return successResponse(res, `Product ${name} created successfully!`);
         }
@@ -98,6 +98,8 @@ const updateProduct = async (req, res, next) => {
             description: description ? description : product.description, 
             image: image ? image : product.image,
             qty: qty ? qty : product.qty, 
+            unit: unit ? unit : product.unit, 
+            category: category ? category : product.category,
             price: price ? price : product.price,
             status: status ? status : product.status
         };
@@ -122,7 +124,13 @@ const getProducts = async (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty())
             return res.status(400).json({ errors: errors.array() });
-        const products = await DB.products.findAll({order: [ ['id', 'DESC'] ]});
+        const where = {}
+        if(req.admin.role === 'sales rep') {
+            where.category = 'shop'
+        } else if (req.admin.role === 'store') {
+            where.category = 'store'
+        }
+        const products = await DB.products.findAll({ where, order: [ ['id', 'DESC'] ]});
 
         if(!products.length)
             return successResponse(res, `No product available!`, []);

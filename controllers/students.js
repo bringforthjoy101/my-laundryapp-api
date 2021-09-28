@@ -29,8 +29,8 @@ const createMultipleStudents= async (req, res, next) => {
 
             for(let i=0;i<students.length;i++){
 
-                const { firstName, lastName, otherName, email, studentId, type, className, level, group } = students[i];
-                const insertData = { firstName, lastName, otherName, email, studentId, type, class:className, level, group };
+                const { firstName, lastName, otherName, type, className, level, group } = students[i];
+                const insertData = { firstName, lastName, otherName, type, class:className, level, group };
                 const student = await DB.students.findOne({ where: { studentId } });
 
                 if (!student) {
@@ -61,8 +61,8 @@ const createStudent= async (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty())
                 return res.status(400).json({ errors: errors.array() });
-            const { firstName, lastName, otherName, email, studentId, type, className, level, group, avatar } = req.body;
-            const insert_data = { firstName, lastName, otherName, email, studentId, type, class:className, level, group, avatar }
+            const { firstName, lastName, otherName, type, className, level, group, avatar } = req.body;
+            const insert_data = { firstName, lastName, otherName, type, class:className, level, group, avatar }
 
             const student = await DB.students.findOne({ where: { studentId } });
             if (student)
@@ -91,7 +91,7 @@ const updateStudent = async (req, res, next) => {
             return res.status(400).json({ errors: errors.array() });
 
         const {id} = req.params;
-        const {firstName, lastName, otherName, email, studentId, type, className, level, group, wallet, status, avatar} = req.body;
+        const {firstName, lastName, otherName, type, className, level, group, wallet, status, avatar} = req.body;
         const student = await DB.students.findOne({ where: {id} });
         if (!student)
                 return errorResponse(res, `Student with ID ${id} not found!`);
@@ -99,8 +99,6 @@ const updateStudent = async (req, res, next) => {
             firstName: firstName ? firstName : student.firstName, 
             lastName: lastName ? lastName : student.lastName, 
             otherName: otherName ? otherName : student.otherName,
-            email: email ? email : student.email, 
-            studentId: studentId ? studentId : student.studentId,
             type: type ? type : student.type,
             class: className ? className : student.class, 
             level: level ? level : student.level,

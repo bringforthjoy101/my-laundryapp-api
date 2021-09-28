@@ -46,20 +46,28 @@ exports.validate = (method) => {
 
     // Products validations
     case '/products/create': {
+      const validUnit = ['kg', 'pck', 'pcs', 'l', 'tuber', 'g', 'rubber', 'bunch', 'crate', 'carton'];
+      const validCategory = ['shop', 'book', 'store'];
       return [
           body('name').not().isEmpty().isString().withMessage('name is required!'),
           body('description').not().isEmpty().isString().withMessage('description is required!'),
           body('qty').custom(value => { return Number(value) }).withMessage('qty is required!'),
+          body('unit').custom(value => { return validUnit.includes(value) }).withMessage(`unit can only be ${validUnit}!`),
+          body('category').custom(value => { return validCategory.includes(value) }).withMessage(`category can only be ${validCategory}!`),
           body('price').custom(value => { return Number(value) }).withMessage('price is required!'),
           body('image').not().isEmpty().isString().withMessage('image is required!')
       ]
     }
     case '/products/update': {
+      const validUnit = ['kg', 'pck', 'pcs', 'l', 'tuber', 'g', 'rubber', 'bunch', 'crate', 'carton'];
+      const validCategory = ['shop', 'book', 'store'];
       return [
           param('id').isInt().withMessage('ID must be a number!'),
           body('name').optional().isString().withMessage('name must be a string'),
           body('description').optional().isString().withMessage('description is required!'),
           body('qty').optional().custom(value => { return Number(value) }).withMessage('qty is required!'),
+          body('unit').optional().custom(value => { return validUnit.includes(value) }).withMessage(`unit can only be ${validUnit}!`),
+          body('category').optional().custom(value => { return validCategory.includes(value) }).withMessage(`category can only be ${validCategory}!`),
           body('price').optional().custom(value => { return Number(value) }).withMessage('price is required!'),
           body('image').optional().not().isEmpty().isString().withMessage('image is required!'),
           body('status').optional().custom(value => { return ['in stock', 'out of stock'].includes(value) }).withMessage('status can only be in stock or out of stock!')
@@ -79,8 +87,6 @@ exports.validate = (method) => {
           body('firstName').not().isEmpty().isString().withMessage('firstName is required!'),
           body('lastName').not().isEmpty().isString().withMessage('lastName is required!'),
           body('otherName').optional().isString().withMessage('otherName is required!'),
-          body('email').isString().withMessage('email is required!'),
-          body('studentId').not().isEmpty().isString().withMessage('studentId is required!'),
           body('type').custom(value => { return ['boarding', 'day'].includes(value) }).withMessage('type can only be boarding or day!'),
           body('className').custom(value => { return ['senior', 'junior'].includes(value) }).withMessage('className can only be junior or senior!'),
           body('level').custom(value => { return ['1', '2', '3'].includes(value) }).withMessage('level can only be 1, 2 or 3!'),
@@ -102,8 +108,6 @@ exports.validate = (method) => {
           body('firstName').optional().isString().withMessage('firstName is required!'),
           body('lastName').optional().isString().withMessage('lastName is required!'),
           body('otherName').optional().isString().withMessage('otherName is required!'),
-          body('email').optional().isString().withMessage('email is required!'),
-          body('studentId').optional().isString().withMessage('studentId is required!'),
           body('type').optional().custom(value => { return ['boarding', 'day'].includes(value) }).withMessage('type can only be boarding or day!'),
           body('className').optional().custom(value => { return ['senior', 'junior'].includes(value) }).withMessage('className can only be junior or senior!'),
           body('level').optional().custom(value => { return [1, 2, 3].includes(Number(value)) }).withMessage('level can only be 1, 2 or 3!'),
