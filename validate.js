@@ -76,7 +76,7 @@ exports.validate = (method) => {
 
     case '/orders/create': {
       return [
-          body('amount').custom(value => { return Number(value) }).withMessage('amount is required!'),
+          // body('amount').custom(value => { return Number(value) }).withMessage('amount is required!'),
           body('products').custom(value => { return Array.isArray(value) }).withMessage('products must be an array of objects'),
           body('studentId').custom(value => { return Number(value) }).withMessage('studentId is required!')
       ]
