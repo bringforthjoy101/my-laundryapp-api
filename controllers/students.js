@@ -31,14 +31,8 @@ const createMultipleStudents= async (req, res, next) => {
 
                 const { firstName, lastName, otherName, type, className, level, group } = students[i];
                 const insertData = { firstName, lastName, otherName, type, class:className, level, group };
-                const student = await DB.students.findOne({ where: { studentId } });
-
-                if (!student) {
-                    await DB.students.create(insertData);
-                    successArr.push({successMsg: `Student ${firstName} ${lastName} created successfully!`});
-                } else {
-                    errorArr.push({errorMsg: `Student ${studentId} already exists!`})
-                }
+                await DB.students.create(insertData);
+                successArr.push({successMsg: `Student ${firstName} ${lastName} created successfully!`});
             }
             return successResponse(res, `Operation completed!`, {success:successArr.length, successData:successArr, failure:errorArr.length, failureData:errorArr});
         }
@@ -64,9 +58,6 @@ const createStudent= async (req, res, next) => {
             const { firstName, lastName, otherName, type, className, level, group, avatar } = req.body;
             const insert_data = { firstName, lastName, otherName, type, class:className, level, group, avatar }
 
-            const student = await DB.students.findOne({ where: { studentId } });
-            if (student)
-                return errorResponse(res, `Student ${studentId} already exists!`);
             const result = await DB.students.create(insert_data);
             if (result)
                 return successResponse(res, `Student ${studentId} created successfully!`);
