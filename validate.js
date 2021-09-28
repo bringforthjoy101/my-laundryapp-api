@@ -54,7 +54,7 @@ exports.validate = (method) => {
           body('qty').optional().custom(value => { return Number(value) }).withMessage('qty is required!'),
           body('unit').custom(value => { return validUnit.includes(value) }).withMessage(`unit can only be ${validUnit}!`),
           body('category').custom(value => { return validCategory.includes(value) }).withMessage(`category can only be ${validCategory}!`),
-          body('price').optional().not().isEmpty().custom(value => { return Number(value) }).withMessage('price is required!'),
+          // body('price').optional().not().isEmpty().custom(value => { return Number(value) }).withMessage('price is required!'),
           body('image').not().isEmpty().isString().withMessage('image is required!')
       ]
     }
