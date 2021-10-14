@@ -38,6 +38,10 @@ module.exports = function(sequelize, Sequelize) {
             type: Sequelize.STRING,
             allowNull: false
         },
+        role: {
+            type: Sequelize.ENUM('student', 'kitchen'),
+            defaultValue: 'student'
+        },
         status: {
             type: Sequelize.ENUM('active', 'suspended', 'expelled', 'graduated'),
             defaultValue: 'active'

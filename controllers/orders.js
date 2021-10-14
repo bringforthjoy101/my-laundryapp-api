@@ -80,10 +80,9 @@ const createOrder= async (req, res, next) => {
             await DB.orders.create(insertData);
             products.forEach(async product => {
                 const item = await DB.products.findOne({ where: {id: product.id}});
-                if(product.price > 0) await item.update({qty: Number(item.qty) - Number(product.qty)});
+                if(product.price > 0 || product.category === 'store') await item.update({qty: Number(item.qty) - Number(product.qty)});
             })
             return successResponse(res, `Order placed successfully!`);
-            
         }
         catch(error){
             console.log(error);

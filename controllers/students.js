@@ -151,7 +151,7 @@ const getStudents = async (req, res, next) => {
         return successResponse(res, `${students.length} student${students.length>1 ? 's' : ''} retrived!`, students);
     }
     catch(error){
-        console.log(error.message);
+        console.log(error);
         return errorResponse(res, `An error occured:- ${error.message}`);
     }
 }
