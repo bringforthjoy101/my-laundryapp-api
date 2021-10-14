@@ -28,7 +28,7 @@ exports.validate = (method) => {
           body('email').not().isEmpty().isString().withMessage('Email is required!'),
           body('password').not().isEmpty().isString().withMessage('Password is required!'),
           body('phone').not().isEmpty().isString().withMessage('Phone is required!'),
-          body('role').custom(value => { return ['manager', 'busary', 'sales rep'].includes(value) }).withMessage('role can only be manager, busary or sales rep!')
+          body('role').custom(value => { return ['manager', 'busary', 'sales rep', 'store'].includes(value) }).withMessage('role can only be manager, busary, store or sales rep!')
         ]   
     }
     case '/login': {
