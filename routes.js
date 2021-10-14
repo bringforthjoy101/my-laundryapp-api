@@ -40,7 +40,7 @@ router.get('/products/delete/:id', validate('id'), products.deleteProduct);
 router.post('/students/create', validate('/students/create'), students.createStudent);
 router.post('/students/update/:id', validate('/students/update'), students.updateStudent);
 router.post('/students/wallet', validate('/students/wallet'), students.creditOrDebitStudentWallet);
-router.get('/students', students.getStudents);
+router.get('/students/:type?', students.getStudents);
 router.get('/students/get-detail/:id', validate('id'), students.getStudentDetail);
 router.get('/students/delete/:id', validate('id'), students.deleteStudent);
 

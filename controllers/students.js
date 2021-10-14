@@ -29,8 +29,8 @@ const createMultipleStudents= async (req, res, next) => {
 
             for(let i=0;i<students.length;i++){
 
-                const { firstName, lastName, otherName, type, className, level, group } = students[i];
-                const insertData = { firstName, lastName, otherName, type, class:className, level, group };
+                const { firstName, lastName, otherName, type, className, level, group, role } = students[i];
+                const insertData = { firstName, lastName, otherName, type, class:className, level, group, role };
                 await DB.students.create(insertData);
                 successArr.push({successMsg: `Student ${firstName} ${lastName} created successfully!`});
             }
@@ -55,8 +55,8 @@ const createStudent= async (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty())
                 return res.status(400).json({ errors: errors.array() });
-            const { firstName, lastName, otherName, type, className, level, group, avatar } = req.body;
-            const insert_data = { firstName, lastName, otherName, type, class:className, level, group, avatar }
+            const { firstName, lastName, otherName, type, className, level, group, avatar, role } = req.body;
+            const insert_data = { firstName, lastName, otherName, type, class:className, level, group, avatar, role }
 
             const result = await DB.students.create(insert_data);
             if (result)
@@ -96,6 +96,7 @@ const updateStudent = async (req, res, next) => {
             group: group ? group : student.group,
             wallet: wallet ? Number(student.wallet) + Number(wallet) : student.wallet,
             status: status ? status : student.status,
+            role: role ? role : student.role,
             avatar: avatar ? avatar : student.avatar
         };
         await student.update(updateData);
@@ -144,7 +145,12 @@ const getStudents = async (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty())
             return res.status(400).json({ errors: errors.array() });
-        const students = await DB.students.findAll({ order: [ ['id', 'DESC'] ] });
+        const where = {};
+        const {type} = req.params;
+        if(type) {
+            where.role = type;
+        }
+        const students = await DB.students.findAll({ where, order: [ ['id', 'DESC'] ] });
 
         if(!students.length)
             return successResponse(res, `No student available!`, []);
