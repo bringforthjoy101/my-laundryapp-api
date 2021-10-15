@@ -145,10 +145,10 @@ const getStudents = async (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty())
             return res.status(400).json({ errors: errors.array() });
-        const where = {};
+        let where = {role: 'student'};
         const {type} = req.params;
         if(type) {
-            where.role = type;
+            where = {...where, role:type}
         }
         const students = await DB.students.findAll({ where, order: [ ['id', 'DESC'] ] });
 
