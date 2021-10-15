@@ -91,7 +91,7 @@ exports.validate = (method) => {
           body('className').custom(value => { return ['senior', 'junior'].includes(value) }).withMessage('className can only be junior or senior!'),
           body('level').custom(value => { return ['1', '2', '3'].includes(value) }).withMessage('level can only be 1, 2 or 3!'),
           body('group').not().isEmpty().isString().withMessage('group is required!'),
-          body('avatar').isString().withMessage('avatar is required!'),
+          body('avatar').not().isEmpty().isString().withMessage('avatar is required!'),
           body('role').optional().custom(value => { return ['student', 'kitchen'].includes(value) }).withMessage('role can only be student or kitchen!')
       ]
     }
