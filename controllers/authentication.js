@@ -150,7 +150,7 @@ const getAdmins = async (req, res, next) => {
 
 const dashboardData = async (req, res, next) => {
     try {
-        const students = await DB.students.findAll();
+        const students = await DB.students.findAll({ where: { role: 'student'}});
         const admins = await DB.admins.findAll();
         const products = await DB.products.findAll();
         const orders = await DB.orders.findAll();
