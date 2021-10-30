@@ -176,7 +176,7 @@ const getStudentDetail = async(req,res) => {
         const {id} = req.params;
         const student = await DB.students.findOne({ where: { id }, include: [
             { model: DB.orders, order: [ ['id', 'DESC'] ], include: {model: DB.admins, attributes: ['id', 'firstName', 'lastName']} }, 
-            { model: DB.transactions, order: [ ['id', 'DESC'] ] }
+            { model: DB.transactions, order: [ ['id', 'DESC'] ], include: {model: DB.admins, attributes: ['id', 'firstName', 'lastName']} }
         ], order: [ ['id', 'DESC'] ] });
         
         if(!student)

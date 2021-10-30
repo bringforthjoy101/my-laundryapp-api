@@ -47,7 +47,8 @@ const getTransactionDetail = async(req,res) => {
         const transaction = await DB.transactions.findOne({ 
             where: { id: transactionId }, 
             include: [
-                { model: DB.students, attributes: ['id', 'fisrtName', 'lastName', 'avatar'] }
+                { model: DB.students, attributes: ['id', 'fisrtName', 'lastName', 'avatar'] },
+                { model: DB.admins, attributes: ['id', 'firstName', 'lastName'] }
             ] 
         });
         
