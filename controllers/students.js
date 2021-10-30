@@ -174,7 +174,10 @@ const getStudentDetail = async(req,res) => {
         if (!errors.isEmpty())
             return res.status(400).json({ errors: errors.array() });
         const {id} = req.params;
-        const student = await DB.students.findOne({ where: { id }, include: [{ model: DB.orders, order: [ ['id', 'DESC'] ] }, { model: DB.transactions, order: [ ['id', 'DESC'] ] }], order: [ ['id', 'DESC'] ] });
+        const student = await DB.students.findOne({ where: { id }, include: [
+            { model: DB.orders, order: [ ['id', 'DESC'] ], include: {model: DB.admins, attributes: ['id', 'firstName', 'lastName']} }, 
+            { model: DB.transactions, order: [ ['id', 'DESC'] ] }
+        ], order: [ ['id', 'DESC'] ] });
         
         if(!student)
             return errorResponse(res, `Student with ID ${id} not found!`);
