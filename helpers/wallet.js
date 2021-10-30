@@ -6,8 +6,8 @@ const getStudentWalletBalance = async (studentId) => {
     return student.wallet;
 }
 
-const updateWallet = async ({transactionId, studentId, amount, narration, type}) => {
-    console.log(transactionId);
+const updateWallet = async ({transactionId, studentId, adminId, amount, narration, type}) => {
+    // console.log(transactionId);
     let balance = await getStudentWalletBalance(studentId);
     
     if (type == "credit") {
@@ -38,7 +38,8 @@ const updateWallet = async ({transactionId, studentId, amount, narration, type})
       balance,
       type,
       narration,
-      studentId
+      studentId,
+      adminId
     };
     const transaction = await DB.transactions.create(users_transactions_data);
     if (transaction)

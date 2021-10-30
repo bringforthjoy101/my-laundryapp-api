@@ -65,10 +65,12 @@ const createOrder= async (req, res, next) => {
             if (!errors.isEmpty())
                 return res.status(400).json({ errors: errors.array() });
             const { amount, products, studentId, } = req.body;
+            const adminId = req.admin.id
             const transactionId = new Date().getTime();
             const walletData = {
                 studentId,
                 transactionId,
+                adminId,
                 amount,
                 narration: 'Purchase from Tuck Shop',
                 type: 'debit'
@@ -76,7 +78,7 @@ const createOrder= async (req, res, next) => {
             const logTransaction = await updateWallet(walletData);
             if(!logTransaction.status)
                 return errorResponse(res, `An error occured:- ${logTransaction.message}`);
-            const insertData = { orderNumber: generateOrderId(), transactionId: logTransaction.id, amount, products, studentId, adminId: req.admin.id }
+            const insertData = { orderNumber: generateOrderId(), transactionId: logTransaction.id, amount, products, studentId, adminId }
             await DB.orders.create(insertData);
             products.forEach(async product => {
                 const item = await DB.products.findOne({ where: {id: product.id}});

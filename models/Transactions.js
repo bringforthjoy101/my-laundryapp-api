@@ -34,6 +34,10 @@ module.exports = function(sequelize, Sequelize) {
             type: Sequelize.INTEGER,
             allowNull: false
         },
+        adminId: {
+            type: Sequelize.INTEGER,
+            allowNull: false
+        },
     }, {
         freezeTableName: true
     });
@@ -41,6 +45,7 @@ module.exports = function(sequelize, Sequelize) {
     Transactions.associate = function(models) {
         models.transactions.hasOne(models.orders, {onDelete: 'CASCADE',targetKey: "id", foreignKey: 'transactionId'});
         models.transactions.belongsTo(models.students, {onDelete: 'CASCADE',targetKey: "id", foreignKey: 'studentId'});
+        models.transactions.belongsTo(models.admins, {onDelete: 'CASCADE',targetKey: "id", foreignKey: 'adminId'});
     };
 
     return Transactions;
