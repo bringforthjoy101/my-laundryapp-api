@@ -17,7 +17,8 @@ const getTransactions = async (req, res, next) => {
             return res.status(400).json({ errors: errors.array() });
         const transactions = await DB.transactions.findAll({
             include: [
-                { model: DB.students, attributes: ['id', 'firstName', 'lastName', 'avatar'] }
+                { model: DB.students, attributes: ['id', 'firstName', 'lastName', 'avatar'] },
+                { model: DB.admins, attributes: ['id', 'firstName', 'lastName'] }
             ], order: [ ['id', 'DESC'] ]
         });
 
