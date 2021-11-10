@@ -89,7 +89,7 @@ exports.validate = (method) => {
           body('otherName').optional().isString().withMessage('otherName is required!'),
           body('type').custom(value => { return ['boarding', 'day'].includes(value) }).withMessage('type can only be boarding or day!'),
           body('className').custom(value => { return ['senior', 'junior'].includes(value) }).withMessage('className can only be junior or senior!'),
-          body('level').custom(value => { return ['1', '2', '3'].includes(value) }).withMessage('level can only be 1, 2 or 3!'),
+          body('year').custom(value => { return ['7', '8', '9', '10', '11', '12'].includes(value) }).withMessage('level can only be 7, 8, 9, 10, 11 or 12!'),
           body('group').not().isEmpty().isString().withMessage('group is required!'),
           body('avatar').not().isEmpty().isString().withMessage('avatar is required!'),
           body('role').optional().custom(value => { return ['student', 'kitchen'].includes(value) }).withMessage('role can only be student or kitchen!')
@@ -111,7 +111,7 @@ exports.validate = (method) => {
           body('otherName').optional().isString().withMessage('otherName is required!'),
           body('type').optional().custom(value => { return ['boarding', 'day'].includes(value) }).withMessage('type can only be boarding or day!'),
           body('className').optional().custom(value => { return ['senior', 'junior'].includes(value) }).withMessage('className can only be junior or senior!'),
-          body('level').optional().custom(value => { return [1, 2, 3].includes(Number(value)) }).withMessage('level can only be 1, 2 or 3!'),
+          body('year').optional().custom(value => { return ['7', '8', '9', '10', '11', '12'].includes(value) }).withMessage('level can only be 7, 8, 9, 10, 11 or 12!'),
           body('group').optional().isString().withMessage('group is required!'),
           body('avatar').optional().isString().withMessage('avatay is required!'),
           body('wallet').optional().custom(value => { return Number(value) }).withMessage('wallet is required!'),
