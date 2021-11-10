@@ -95,6 +95,30 @@ const login = async (req, res, next) => {
     }
 };
 
+const changePassword = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    const {email, oldPassword, newPassword} = req.body;
+    try {
+        const admin = await DB.admins.findOne({ where: { email, status: 'active' } });
+        if(!admin) return handleResponse(res, 400, false, `Admin not found!`);
+        const validPassword = await bcrypt.compareSync(oldPassword, admin.password);
+        if (!validPassword) return handleResponse(res, 400, false, `Incorrect  old password!`);
+        const salt = await bcrypt.genSalt(15);
+        const hashPassword = await bcrypt.hash(newPassword, salt);
+        const changedPassword = await admin.update({password: hashPassword});
+        if (!changedPassword) return handleResponse(res, 400, false, `Unable change password!`);
+        return handleResponse(res, 200, false, `Password changed successfully`);
+    } catch (error) {
+        console.log(error);
+        return handleResponse(res, 401, false, `An error occured - ${error}`);
+    }
+    
+}
+
 const isAuthorized = async (req, res, next) => {
     
     //this is the url without query params
@@ -228,5 +252,5 @@ const dashboardData = async (req, res, next) => {
 
     
 module.exports = {
-    isAuthorized, isAdmin, login, register, getAdmins, dashboardData
+    isAuthorized, isAdmin, login, register, changePassword, getAdmins, dashboardData
 }

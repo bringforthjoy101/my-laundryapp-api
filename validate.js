@@ -37,6 +37,13 @@ exports.validate = (method) => {
           body('password').not().isEmpty().isString().withMessage('Password is required!')
       ]
     }
+    case '/change-password': {
+      return [
+          body('email').not().isEmpty().isString().withMessage('Email is required!'),
+          body('oldPassword').not().isEmpty().isString().withMessage('Old password is required!'),
+          body('newPassword').not().isEmpty().isString().withMessage('New password is required!'),
+      ]
+    }
 
     case 'id': {
       return [
