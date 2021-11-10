@@ -29,8 +29,8 @@ const createMultipleStudents= async (req, res, next) => {
 
             for(let i=0;i<students.length;i++){
 
-                const { firstName, lastName, otherName, type, className, level, group, role } = students[i];
-                const insertData = { firstName, lastName, otherName, type, class:className, level, group, role };
+                const { firstName, lastName, otherName, type, className, year, group, role } = students[i];
+                const insertData = { firstName, lastName, otherName, type, class:className, year, group, role };
                 await DB.students.create(insertData);
                 successArr.push({successMsg: `Student ${firstName} ${lastName} created successfully!`});
             }
@@ -55,8 +55,8 @@ const createStudent= async (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty())
                 return res.status(400).json({ errors: errors.array() });
-            const { firstName, lastName, otherName, type, className, level, group, avatar, role } = req.body;
-            const insert_data = { firstName, lastName, otherName, type, class:className, level, group, avatar, role }
+            const { firstName, lastName, otherName, type, className, year, group, avatar, role } = req.body;
+            const insert_data = { firstName, lastName, otherName, type, class:className, year, group, avatar, role }
 
             const result = await DB.students.create(insert_data);
             if (result)
@@ -82,7 +82,7 @@ const updateStudent = async (req, res, next) => {
             return res.status(400).json({ errors: errors.array() });
 
         const {id} = req.params;
-        const {firstName, lastName, otherName, type, className, level, group, wallet, status, avatar} = req.body;
+        const {firstName, lastName, otherName, type, className, year, group, wallet, status, avatar} = req.body;
         const student = await DB.students.findOne({ where: {id} });
         if (!student)
                 return errorResponse(res, `Student with ID ${id} not found!`);
@@ -92,7 +92,7 @@ const updateStudent = async (req, res, next) => {
             otherName: otherName ? otherName : student.otherName,
             type: type ? type : student.type,
             class: className ? className : student.class, 
-            level: level ? level : student.level,
+            year: year ? year : student.year,
             group: group ? group : student.group,
             wallet: wallet ? Number(student.wallet) + Number(wallet) : student.wallet,
             status: status ? status : student.status,

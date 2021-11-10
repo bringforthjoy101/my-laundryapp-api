@@ -23,9 +23,9 @@ module.exports = function(sequelize, Sequelize) {
             type: Sequelize.ENUM('senior', 'junior'),
             defaultValue: 'junior'
         },
-        level: {
-            type: Sequelize.ENUM('1', '2', '3'),
-            defaultValue: '1'
+        year: {
+            type: Sequelize.ENUM('0', '7', '8', '9', '10', '11', '12'),
+            defaultValue: '7'
         },
         group: {
             type: Sequelize.STRING
