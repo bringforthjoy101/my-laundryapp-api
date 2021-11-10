@@ -111,7 +111,7 @@ const changePassword = async (req, res, next) => {
         const hashPassword = await bcrypt.hash(newPassword, salt);
         const changedPassword = await admin.update({password: hashPassword});
         if (!changedPassword) return handleResponse(res, 400, false, `Unable change password!`);
-        return handleResponse(res, 200, false, `Password changed successfully`);
+        return handleResponse(res, 200, true, `Password changed successfully`);
     } catch (error) {
         console.log(error);
         return handleResponse(res, 401, false, `An error occured - ${error}`);
