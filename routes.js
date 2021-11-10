@@ -27,7 +27,7 @@ router.get('/subscribers', subscription.getSubscribers);
 // LOGIN && REGISTER ROUTE
 router.post('/login', validate('/login'), login);
 router.post('/register', validate('/register'), register);
-router.post('/change-password', validate('/products/create'), changePassword);
+router.post('/change-password', validate('/change-password'), changePassword);
 router.get('/admins', getAdmins);
 router.get('/dashboard', dashboardData);
 router.post('/upload-images', upload.array('image',1), general.uploadFile);
