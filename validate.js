@@ -27,8 +27,7 @@ exports.validate = (method) => {
           body('lastName').not().isEmpty().isString().withMessage('Lastname is required!'),
           body('email').not().isEmpty().isString().withMessage('Email is required!'),
           body('password').not().isEmpty().isString().withMessage('Password is required!'),
-          body('phone').not().isEmpty().isString().withMessage('Phone is required!'),
-          body('role').custom(value => { return ['manager', 'busary', 'sales rep', 'store'].includes(value) }).withMessage('role can only be manager, busary, store or sales rep!')
+          body('phone').not().isEmpty().isString().withMessage('Phone is required!')
         ]   
     }
     case '/login': {
@@ -52,78 +51,79 @@ exports.validate = (method) => {
     }
 
     // Products validations
-    case '/products/create': {
+    case '/services/create': {
       const validUnit = ['kg', 'pck', 'pcs', 'l', 'tuber', 'g', 'rubber', 'bunch', 'crate', 'carton'];
       const validCategory = ['shop', 'book', 'store'];
       return [
-          body('name').not().isEmpty().isString().withMessage('name is required!'),
-          body('description').not().isEmpty().isString().withMessage('description is required!'),
-          body('qty').optional().custom(value => { return Number(value) }).withMessage('qty is required!'),
-          body('unit').custom(value => { return validUnit.includes(value) }).withMessage(`unit can only be ${validUnit}!`),
-          body('category').custom(value => { return validCategory.includes(value) }).withMessage(`category can only be ${validCategory}!`),
+          body('name').not().isEmpty().isString().withMessage('name is required!')
           // body('price').optional().not().isEmpty().custom(value => { return Number(value) }).withMessage('price is required!'),
-          body('image').not().isEmpty().isString().withMessage('image is required!')
       ]
     }
-    case '/products/update': {
-      const validUnit = ['kg', 'pck', 'pcs', 'l', 'tuber', 'g', 'rubber', 'bunch', 'crate', 'carton'];
-      const validCategory = ['shop', 'book', 'store'];
+    case '/services/update': {
       return [
           param('id').isInt().withMessage('ID must be a number!'),
           body('name').optional().isString().withMessage('name must be a string'),
-          body('description').optional().isString().withMessage('description is required!'),
-          // body('qty').optional().custom(value => { return Number(value) }).withMessage('qty is required!'),
-          body('unit').optional().custom(value => { return validUnit.includes(value) }).withMessage(`unit can only be ${validUnit}!`),
-          body('category').optional().custom(value => { return validCategory.includes(value) }).withMessage(`category can only be ${validCategory}!`),
           // body('price').optional().custom(value => { return Number(value) }).withMessage('price is required!'),
-          body('image').optional().not().isEmpty().isString().withMessage('image is required!'),
-          body('status').optional().custom(value => { return ['in stock', 'out of stock'].includes(value) }).withMessage('status can only be in stock or out of stock!')
+          body('status').optional().custom(value => { return ['available', 'unavailable'].includes(value) }).withMessage('status can only be available or unavailable!')
       ]
     }
 
     case '/orders/create': {
       return [
           // body('amount').custom(value => { return Number(value) }).withMessage('amount is required!'),
-          body('products').custom(value => { return Array.isArray(value) }).withMessage('products must be an array of objects'),
-          body('studentId').custom(value => { return Number(value) }).withMessage('studentId is required!')
+          body('services').custom(value => { return Array.isArray(value) }).withMessage('services must be an array of objects'),
+          body('clientId').custom(value => { return Number(value) }).withMessage('clientId is required!')
+      ]
+    }
+
+    case '/orders/update': {
+      return [
+          param('id').isInt().withMessage('ID must be a number!'),
+          body('status').optional().custom(value => { return ['paid', 'unpaid'].includes(value) }).withMessage('status can only be paid or unpaid!')
       ]
     }
     
-    case '/students/create': {
+    case '/clients/create': {
       return [
-          body('firstName').not().isEmpty().isString().withMessage('firstName is required!'),
-          body('lastName').not().isEmpty().isString().withMessage('lastName is required!'),
-          body('otherName').optional().isString().withMessage('otherName is required!'),
-          body('type').custom(value => { return ['boarding', 'day'].includes(value) }).withMessage('type can only be boarding or day!'),
-          body('className').custom(value => { return ['senior', 'junior'].includes(value) }).withMessage('className can only be junior or senior!'),
-          body('year').custom(value => { return ['7', '8', '9', '10', '11', '12'].includes(value) }).withMessage('level can only be 7, 8, 9, 10, 11 or 12!'),
-          body('group').not().isEmpty().isString().withMessage('group is required!'),
-          body('avatar').not().isEmpty().isString().withMessage('avatar is required!'),
-          body('role').optional().custom(value => { return ['student', 'kitchen'].includes(value) }).withMessage('role can only be student or kitchen!')
+          body('names').not().isEmpty().isString().withMessage('names is required!'),
+          body('location').not().isEmpty().isString().withMessage('location is required!'),
+          body('phone').optional().isString().withMessage('phone is required!')
       ]
     }
-    case '/students/wallet': {
-      return [
-          body('narration').not().isEmpty().isString().withMessage('narration is required!'),
-          body('amount').custom(value => { return Number(value) }).withMessage('amount is required!'),
-          body('studentId').custom(value => { return Number(value) }).withMessage('studentId is required!'),
-          body('type').custom(value => { return ['credit', 'debit'].includes(value.toLowerCase()) }).withMessage('type can only be credit or debit!')
-      ]
-    }
-    case '/students/update': {
+    case '/clients/update': {
       return [
           param('id').isInt().withMessage('ID must be a number!'),
-          body('firstName').optional().isString().withMessage('firstName is required!'),
-          body('lastName').optional().isString().withMessage('lastName is required!'),
-          body('otherName').optional().isString().withMessage('otherName is required!'),
-          body('type').optional().custom(value => { return ['boarding', 'day'].includes(value) }).withMessage('type can only be boarding or day!'),
-          body('className').optional().custom(value => { return ['senior', 'junior'].includes(value) }).withMessage('className can only be junior or senior!'),
-          body('year').optional().custom(value => { return ['7', '8', '9', '10', '11', '12'].includes(value) }).withMessage('level can only be 7, 8, 9, 10, 11 or 12!'),
-          body('group').optional().isString().withMessage('group is required!'),
-          body('avatar').optional().isString().withMessage('avatay is required!'),
-          body('wallet').optional().custom(value => { return Number(value) }).withMessage('wallet is required!'),
-          body('role').optional().custom(value => { return ['student', 'kitchen'].includes(value) }).withMessage('role can only be student or kitchen!'),
-          body('status').optional().custom(value => { return ['active', 'suspended', 'expelled', 'graduated'].includes(value) }).withMessage('status can only be active, suspended, expelled, graduated!')
+          body('names').optional().not().isEmpty().isString().withMessage('names is required!'),
+          body('location').optional().not().isEmpty().isString().withMessage('location is required!'),
+          body('phone').optional().isString().withMessage('phone is required!'),
+          body('status').optional().custom(value => { return ['active', 'inactive'].includes(value) }).withMessage('status can only be active or inactive!')
+      ]
+    }
+
+    case '/businesses/create': {
+      return [
+          body('name').not().isEmpty().isString().withMessage('name is required!'),
+          body('address').not().isEmpty().isString().withMessage('address is required!'),
+          body('logo').not().isEmpty().isString().withMessage('logo is required!'),
+          body('email').not().isEmpty().isString().withMessage('email is required!'),
+          body('phone').optional().isString().withMessage('phone is required!'),
+          body('bankName').not().isEmpty().isString().withMessage('bankName is required!'),
+          body('bankAccountNumber').not().isEmpty().isString().withMessage('bankAccountNumber is required!'),
+          body('accountName').not().isEmpty().isString().withMessage('accountName is required!'),
+      ]
+    }
+    case '/businesses/update': {
+      return [
+          param('id').isInt().withMessage('ID must be a number!'),
+          body('name').optional().not().isEmpty().isString().withMessage('name is required!'),
+          body('address').optional().not().isEmpty().isString().withMessage('address is required!'),
+          body('logo').optional().not().isEmpty().isString().withMessage('logo is required!'),
+          body('email').optional().not().isEmpty().isString().withMessage('email is required!'),
+          body('phone').optional().isString().withMessage('phone is required!'),
+          body('bankName').optional().not().isEmpty().isString().withMessage('bankName is required!'),
+          body('bankAccountNumber').optional().not().isEmpty().isString().withMessage('bankAccountNumber is required!'),
+          body('accountName').optional().not().isEmpty().isString().withMessage('accountName is required!'),
+          body('status').optional().custom(value => { return ['active', 'inactive'].includes(value) }).withMessage('status can only be active or inactive!')
       ]
     }
 

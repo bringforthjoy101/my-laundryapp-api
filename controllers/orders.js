@@ -25,21 +25,13 @@ const createMultipleOrders= async (req, res, next) => {
             let successArr = [];
 
             for(let i=0;i<orders.length;i++){
-                const { amount, products, studentId } = orders[i];
-                const transactionId = new Date().getTime();
-                const walletData = {
-                    studentId,
-                    transactionId,
-                    amount,
-                    type: 'debit'
-                }
-                const logTransaction = await updateWallet(walletData);
-                if (logTransaction.status) {
-                    const insertData = { orderNumber: generateOrderId(), amount, products, studentId, admin: req.admin.id };
-                    await DB.orders.create(insertData);
+                const { amount, services, clientId } = orders[i];
+                const insertData = { orderNumber: generateOrderId(), amount, services, clientId, userId: req.user.id, businessId: req.user.business.id };
+                const createdOrder = await DB.orders.create(insertData);
+                if (createdOrder) {
                     successArr.push({successMsg: `Order placed successfully!`});
                 } else {
-                    errorArr.push({successMsg: logTransaction.message, data: orders[i]});
+                    errorArr.push({successMsg: `An error occured`, data: orders[i]});
                 }
                 
             }
@@ -64,32 +56,42 @@ const createOrder= async (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty())
                 return res.status(400).json({ errors: errors.array() });
-            const { amount, products, studentId, } = req.body;
-            const adminId = req.admin.id
-            const transactionId = new Date().getTime();
-            const walletData = {
-                studentId,
-                transactionId,
-                adminId,
-                amount,
-                narration: 'Purchase from Tuck Shop',
-                type: 'debit'
-            }
-            const logTransaction = await updateWallet(walletData);
-            if(!logTransaction.status)
-                return errorResponse(res, `An error occured:- ${logTransaction.message}`);
-            const insertData = { orderNumber: generateOrderId(), transactionId: logTransaction.id, amount, products, studentId, adminId }
+            const { amount, services, clientId, subTotal, tax, discount, shipping } = req.body;
+            if (!req.user.business) return errorResponse(res, `Please create a business!`);
+            const userId = req.user.id;
+            const businessId = req.user.business.id;
+            
+            const insertData = { orderNumber: generateOrderId(), amount, services, subTotal, tax, discount, shipping, clientId, userId, businessId };
             await DB.orders.create(insertData);
-            products.forEach(async product => {
-                const item = await DB.products.findOne({ where: {id: product.id}});
-                if(product.price > 0 || product.category === 'store') await item.update({qty: Number(item.qty) - Number(product.qty)});
-            })
             return successResponse(res, `Order placed successfully!`);
         }
         catch(error){
             console.log(error);
             return errorResponse(res, `An error occured:- ${error.message}`);
         }
+}
+
+const updateOrder = async (req, res, next) => {
+    try{
+        const errors = validationResult(req);
+        if (!errors.isEmpty())
+            return res.status(400).json({ errors: errors.array() });
+
+        const { status } = req.body;
+        const {id} = req.params;
+        const order = await DB.orders.findOne({ where: {id} });
+        if (!order)
+                return errorResponse(res, `order with ID ${id} not found!`);
+        const updateData = { 
+            status: status ? status : order.status
+        };
+        await order.update(updateData);
+        return successResponse(res, `Service updated successfully!`);
+    }
+    catch(error){
+        console.log(error)
+        return errorResponse(res, `An error occured:- ${error.message}`);
+    }
 }
 
 /**
@@ -106,8 +108,8 @@ const getOrders = async (req, res, next) => {
             return res.status(400).json({ errors: errors.array() });
         const orders = await DB.orders.findAll({
             include: [
-                { model: DB.students, attributes: ['id', 'firstName', 'lastName', 'avatar'] },
-                { model: DB.admins, attributes: ['id', 'firstName', 'lastName'] }
+                { model: DB.clients , attributes: ['names']},
+                { model: DB.users, attributes: ['firstName', 'lastName'] }
             ], order: [ ['id', 'DESC'] ]
         });
 
@@ -133,17 +135,18 @@ const getOrderDetail = async(req,res) => {
         if (!errors.isEmpty())
             return res.status(400).json({ errors: errors.array() });
 
-        const {orderId} = req.body;
+        const {id} = req.params;
         const order = await DB.orders.findOne({ 
-            where: { id: orderId }, 
+            where: { id }, 
             include: [
-                { model: DB.students, attributes: ['id', 'firstName', 'lastName', 'avatar'] },
-                { model: DB.admins, attributes: ['id', 'firstName', 'lastName'] }
+                { model: DB.clients , attributes: ['names', 'phone', 'location']},
+                { model: DB.users, attributes: ['firstName', 'lastName'] },
+                { model: DB.businesses }
             ] 
         });
         
         if(!order)
-            return errorResponse(res, `Order with ID ${orderId} not found!`);
+            return errorResponse(res, `Order with ID ${id} not found!`);
         return successResponse(res, `Order details retrived!`, order);
     }
     catch(error){
@@ -151,4 +154,4 @@ const getOrderDetail = async(req,res) => {
     }
 }
 
-module.exports = { getOrderDetail, createMultipleOrders, createOrder, getOrders }
+module.exports = { getOrderDetail, createMultipleOrders, createOrder, updateOrder, getOrders }

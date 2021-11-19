@@ -1,9 +1,9 @@
 /*************************************************************************
-ADMINS TABLE
+USERS TABLE
 *************************************************************************/
 
 module.exports = function(sequelize, Sequelize) {
-    var Admins = sequelize.define('admins', {
+    var Users = sequelize.define('users', {
         firstName: {
             type: Sequelize.STRING,
             allowNull: false
@@ -24,10 +24,6 @@ module.exports = function(sequelize, Sequelize) {
             type: Sequelize.STRING,
             unique: true
         },
-        role: {
-            type: Sequelize.ENUM('manager', 'busary', 'sales rep', 'store'),
-            defaultValue: 'sales rep'
-        },
         status: {
             type: Sequelize.ENUM('active', 'inactive'),
             defaultValue: 'active'
@@ -36,12 +32,13 @@ module.exports = function(sequelize, Sequelize) {
         freezeTableName: true
     });
 
-    Admins.associate = function(models) {
-        models.admins.hasMany(models.orders, {onDelete: 'cascade',targetKey: "id", foreignKey: 'adminId'});
-        models.admins.hasMany(models.products, {onDelete: 'cascade',targetKey: "id", foreignKey: 'adminId'});
-        models.admins.hasMany(models.stocks, {onDelete: 'cascade',targetKey: "id", foreignKey: 'adminId'});
+    Users.associate = function(models) {
+        models.users.hasMany(models.orders, {onDelete: 'cascade',targetKey: "id", foreignKey: 'userId'});
+        models.users.hasMany(models.services, {onDelete: 'cascade',targetKey: "id", foreignKey: 'userId'});
+        models.users.hasMany(models.clients, {onDelete: 'cascade',targetKey: "id", foreignKey: 'userId'});
+        models.users.hasOne(models.businesses, {onDelete: 'cascade',targetKey: "id", foreignKey: 'userId'});
     };
 
-    return Admins;
+    return Users;
 
 }

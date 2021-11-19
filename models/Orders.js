@@ -14,30 +14,38 @@ module.exports = function(sequelize, Sequelize) {
             type: Sequelize.DOUBLE.UNSIGNED,
             allowNull: false
         },
-        products: {
+        services: {
             type: Sequelize.JSON,
             allowNull: false
         },
-        transactionId: {
-            type: Sequelize.INTEGER,
+        subTotal: {
+            type: Sequelize.DOUBLE.UNSIGNED,
             allowNull: false
         },
-        studentId: {
-            type: Sequelize.INTEGER,
+        tax: {
+            type: Sequelize.DOUBLE.UNSIGNED,
             allowNull: false
         },
-        adminId: {
-            type: Sequelize.INTEGER,
+        discount: {
+            type: Sequelize.DOUBLE.UNSIGNED,
             allowNull: false
-        }
+        },
+        shipping: {
+            type: Sequelize.DOUBLE.UNSIGNED,
+            allowNull: false
+        },
+        status: {
+            type: Sequelize.ENUM('paid', 'unpaid'),
+            defaultValue: 'unpaid'
+        },
     }, {
         freezeTableName: true
     });
 
     Orders.associate = function(models) {
-        models.orders.belongsTo(models.students, {onDelete: 'CASCADE',targetKey: "id", foreignKey: 'studentId'});
-        models.orders.belongsTo(models.admins, {onDelete: 'CASCADE',targetKey: "id", foreignKey: 'adminId'});
-        models.orders.belongsTo(models.transactions, {onDelete: 'cascade',targetKey: "id", foreignKey: 'transactionId'});
+        models.orders.belongsTo(models.clients, {onDelete: 'CASCADE',targetKey: "id", foreignKey: 'clientId'});
+        models.orders.belongsTo(models.users, {onDelete: 'CASCADE',targetKey: "id", foreignKey: 'userId'});
+        models.orders.belongsTo(models.businesses, {onDelete: 'cascade',targetKey: "id", foreignKey: 'businessId'});
     };
 
     return Orders;

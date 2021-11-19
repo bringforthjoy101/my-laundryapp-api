@@ -2,7 +2,7 @@ const config = require('../config/config')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs');
 const DB = require('./db');
-const { Op, Sequelize } = require('sequelize');
+const { Op } = require('sequelize');
 const moment = require('moment');
 const { handleResponse, successResponse, errorResponse } = require('../helpers/utility');
 const { validationResult } = require('express-validator');
@@ -22,8 +22,8 @@ const { validationResult } = require('express-validator');
         return res.status(400).json({ errors: errors.array() });
     }
     
-    const {firstName, lastName, phone, role, email, password} = req.body;
-    let insertData = { firstName, lastName, phone, role, email };
+    const {firstName, lastName, phone, email, password} = req.body;
+    let insertData = { firstName, lastName, phone, email };
     //Hash password
     const salt = await bcrypt.genSalt(15);
     const hashPassword = await bcrypt.hash(password, salt);
@@ -31,21 +31,28 @@ const { validationResult } = require('express-validator');
     // insertData.password = hashPassword;
     
     try {
-        const adminExists = await DB.admins.findOne({where:{email}});
+        const userExists = await DB.users.findOne({ where: { 
+            [Op.or]: [
+                { email },
+                { phone }
+            ] 
+        } });
         
-        // if admin exists stop the process and return a message
-        if (adminExists) 
-            return handleResponse(res, 400, false, `Admin with email ${email} already exists`);
+        // if user exists stop the process and return a message
+        // console.log(insertData)
+        if (userExists) 
+            return handleResponse(res, 401, false, `User with email or phone already exists`);
 
-        const admin = await DB.admins.create(insertData);
+        const user = await DB.users.create(insertData);
         
-        if (admin) {
+        if (user) {
+            const business = await DB.businesses.create({phone, email, userId:user.id});
             let payload = { 
-                id: admin.id,
-                firstName, lastName, phone, email, role: admin.role
+                id: user.id,
+                firstName, lastName, phone, email, business
             };
             const token = jwt.sign(payload, config.JWTSECRET);
-            const data ={ token, admin:payload }
+            const data ={ token, user:payload }
             return handleResponse(res, 200, true, `Registration successfull`, data);
         }
         else {
@@ -60,22 +67,23 @@ const { validationResult } = require('express-validator');
 const login = async (req, res, next) => {
     const {email, password} = req.body;
     try {
-        const admin = await DB.admins.findOne({ where:{email} });
+        const user = await DB.users.findOne({ where: { email }, include: { model: DB.businesses } });
         
-        if (admin) {
-            const validPass = await bcrypt.compareSync(password, admin.password);
+        if (user) {
+            const validPass = await bcrypt.compareSync(password, user.password);
             if (!validPass) return handleResponse(res, 401, false, `Email or Password is incorrect!`);
 
-            if (admin.status === 'inactive') return handleResponse(res, 401, false, `Account Suspended!, Please contact Administrator`);
+            if (user.status === 'inactive') return handleResponse(res, 401, false, `Account Suspended!, Please contact Administrator`);
     
             // Create and assign token
             let payload = { 
-                id: admin.id, 
+                id: user.id, 
                 email, 
-                firstName: admin.firstName, 
-                lastName: admin.lastName,
-                phone: admin.phone,
-                role: admin.role
+                firstName: user.firstName, 
+                lastName: user.lastName,
+                phone: user.phone,
+                role: user.role,
+                business: user.business
             };
             const token = jwt.sign(payload, config.JWTSECRET);
     
@@ -83,7 +91,7 @@ const login = async (req, res, next) => {
                 success: true, 
                 message: 'Operation Successfull',
                 token, 
-                admin: payload 
+                user: payload 
             });
         }
         else {
@@ -103,13 +111,13 @@ const changePassword = async (req, res, next) => {
 
     const {email, oldPassword, newPassword} = req.body;
     try {
-        const admin = await DB.admins.findOne({ where: { email, status: 'active' } });
-        if(!admin) return handleResponse(res, 400, false, `Admin not found!`);
-        const validPassword = await bcrypt.compareSync(oldPassword, admin.password);
+        const user = await DB.users.findOne({ where: { email, status: 'active' } });
+        if(!user) return handleResponse(res, 400, false, `User not found!`);
+        const validPassword = await bcrypt.compareSync(oldPassword, user.password);
         if (!validPassword) return handleResponse(res, 400, false, `Incorrect  old password!`);
         const salt = await bcrypt.genSalt(15);
         const hashPassword = await bcrypt.hash(newPassword, salt);
-        const changedPassword = await admin.update({password: hashPassword});
+        const changedPassword = await user.update({password: hashPassword});
         if (!changedPassword) return handleResponse(res, 400, false, `Unable change password!`);
         return handleResponse(res, 200, true, `Password changed successfully`);
     } catch (error) {
@@ -138,10 +146,10 @@ const isAuthorized = async (req, res, next) => {
 
         if (token === 'null' || !token) return handleResponse(res, 401, false, `Unauthorized request`);
 
-        let verifiedAdmin = jwt.verify(token, config.JWTSECRET);   // config.JWTSECRET => 'secretKey'
-        if (!verifiedAdmin) return handleResponse(res, 401, false, `Unauthorized request`);
-        // verifiedUser.type === 'admin' ? req.admin = verifiedUser : verifiedUser.type === 'user' ? req.user = verifiedUser : handleResponse(res, 401, false, `Unidentified access`);
-        req.admin = verifiedAdmin; // user_id & user_type_id
+        let verifiedUser = jwt.verify(token, config.JWTSECRET);   // config.JWTSECRET => 'secretKey'
+        if (!verifiedUser) return handleResponse(res, 401, false, `Unauthorized request`);
+        // verifiedUser.type === 'user' ? req.user = verifiedUser : verifiedUser.type === 'user' ? req.user = verifiedUser : handleResponse(res, 401, false, `Unidentified access`);
+        req.user = verifiedUser; // user_id & user_type_id
         next();
 
     } catch (error) {
@@ -149,22 +157,22 @@ const isAuthorized = async (req, res, next) => {
     }
 };
 
-const isAdmin = async (req, res, next) => {
-    if (!req.admin)
+const isUser = async (req, res, next) => {
+    if (!req.user)
         return handleResponse(res, 401, false, `Access Denied / Unauthorized request`); 
     next();
 };
 
-const getAdmins = async (req, res, next) => {
+const getUsers = async (req, res, next) => {
     try{
         const errors = validationResult(req);
         if (!errors.isEmpty())
             return res.status(400).json({ errors: errors.array() });
-        const admins = await DB.admins.findAll();
+        const users = await DB.users.findAll();
 
-        if(!admins.length)
-            return successResponse(res, `No admin available!`, []);
-        return successResponse(res, `${admins.length} admin${admins.length>1 ? 's' : ''} retrived!`, admins);
+        if(!users.length)
+            return successResponse(res, `No user available!`, []);
+        return successResponse(res, `${users.length} user${users.length>1 ? 's' : ''} retrived!`, users);
     }
     catch(error){
         console.log(error.message);
@@ -174,11 +182,9 @@ const getAdmins = async (req, res, next) => {
 
 const dashboardData = async (req, res, next) => {
     try {
-        const students = await DB.students.findAll({ where: { role: 'student'}});
-        const admins = await DB.admins.findAll();
-        const products = await DB.products.findAll();
-        const orders = await DB.orders.findAll();
-        const transactions = await DB.transactions.findAll();
+        const clients = await DB.clients.findAll({ where: { userId: req.user.id}});
+        const services = await DB.services.findAll({ where: { userId: req.user.id}});
+        const orders = await DB.orders.findAll({ where: { userId: req.user.id}});
 
         const totalSales = await DB.orders.sum('amount');
         const maxSales = await DB.orders.max('amount');
@@ -233,11 +239,9 @@ const dashboardData = async (req, res, next) => {
         const salesSoFar = await DB.orders.sum('amount');
 
         const data = {
-            totalStudents: students.length,
-            totalAdmins: admins.length,
-            totalProduct: products.length,
+            totalClients: clients.length,
+            totalServices: services.length,
             totalOrders: orders.length,
-            totalTransactions: transactions.length,
             sales: {
                 totalSales, maxSales, avgSales, salesToday, salesYesterday, salesThisWeek, salesThisMonth, salesThisYear, salesSoFar
             }
@@ -252,5 +256,5 @@ const dashboardData = async (req, res, next) => {
 
     
 module.exports = {
-    isAuthorized, isAdmin, login, register, changePassword, getAdmins, dashboardData
+    isAuthorized, isUser, login, register, changePassword, getUsers, dashboardData
 }
